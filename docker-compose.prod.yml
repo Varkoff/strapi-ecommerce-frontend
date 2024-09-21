@@ -1,0 +1,14 @@
+services:
+  ecommerce_production:
+    environment:
+      - JWT_SECRET
+      - STRAPI_TOKEN
+      - STRAPI_URL
+
+    container_name: ecommerce_website_production
+    image: algomax/ecommerce-frontend:production
+    restart: always
+    ports:
+      - '3070:3000'
+    volumes:
+      - ./image-cache:/app/image-cache
