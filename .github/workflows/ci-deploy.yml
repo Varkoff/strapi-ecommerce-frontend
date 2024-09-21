@@ -95,5 +95,5 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         run: |
           docker pull algomax/ecommerce-frontend:production
-          docker compose -f docker-compose.prod.yaml up -d
+          docker compose -f docker-compose.prod.yml up -d
           docker system prune --all --volumes --force
