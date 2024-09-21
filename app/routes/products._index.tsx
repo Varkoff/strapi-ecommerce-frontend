@@ -1,5 +1,6 @@
 import type { LoaderFunctionArgs } from '@remix-run/node';
 import { Link, type MetaFunction, useLoaderData, useSearchParams } from '@remix-run/react';
+import { useEnv } from '~/root';
 import { getCategories, getProducts } from '~/strapi.server';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -22,6 +23,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const { STRAPI_URL } = useEnv() || {}
   const { products, categories } = useLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
   return (
@@ -71,7 +73,7 @@ export default function Index() {
                 <img
                   src={
                     product.image.url.startsWith('/')
-                      ? `http://localhost:1337${product.image.url}`
+                      ? `${STRAPI_URL}${product.image.url}`
                       : product.image.url
                   }
                   alt={product.image?.alternativeText}

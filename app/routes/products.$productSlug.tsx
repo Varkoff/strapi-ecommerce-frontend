@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { json, useLoaderData } from "@remix-run/react";
 import { useCart } from '~/cart.context';
+import { serverEnv } from "~/sessions.server";
 import { getProductBySlug } from "~/strapi.server";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -13,26 +14,27 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
     slug: productSlug,
   });
 
-  return product
+  const { STRAPI_URL } = serverEnv
+  return json({ product, STRAPI_URL })
 };
 
 export const meta: MetaFunction<typeof loader> = ({
   data
 }) => {
   return [
-    { title: data?.name },
-    { name: "description", content: `${data?.description} - ${data?.price}€` },
+    { title: data?.product.name },
+    { name: "description", content: `${data?.product.description} - ${data?.product.price}€` },
     {
       property: "og:image",
-      content: data?.image.url.startsWith("/")
-        ? `http://localhost:1337${data.image.url}`
-        : data?.image.url
+      content: data?.product.image.url.startsWith("/")
+        ? `${data.STRAPI_URL}${data.product.image.url}`
+        : data?.product.image.url
     }
   ];
 };
 
 export default function Index() {
-  const product = useLoaderData<typeof loader>();
+  const { product, STRAPI_URL } = useLoaderData<typeof loader>();
   const { addToCart, cartItems } = useCart();
 
   return (
@@ -44,7 +46,7 @@ export default function Index() {
         <img
           src={
             product.image.url.startsWith("/")
-              ? `http://localhost:1337${product.image.url}`
+              ? `${STRAPI_URL}${product.image.url}`
               : product.image.url
           }
           alt={product.image?.alternativeText}

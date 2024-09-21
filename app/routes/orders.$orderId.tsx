@@ -1,5 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { useEnv } from "~/root";
 import { logout, requireUser } from "~/sessions.server";
 import { getOrderById } from "~/strapi.server";
 
@@ -54,6 +55,7 @@ const LineItem = ({
 }: {
   line: Awaited<ReturnType<typeof getOrderById>>['lines'][0]
 }) => {
+  const { STRAPI_URL } = useEnv() || {}
 
 
   return (
@@ -64,7 +66,7 @@ const LineItem = ({
           <img
             src={
               line.produit.image.url.startsWith("/")
-                ? `http://localhost:1337${line.produit.image.url}`
+                ? `${STRAPI_URL}${line.produit.image.url}`
                 : line.produit.image.url
             }
             alt={line.produit.image.alternativeText}

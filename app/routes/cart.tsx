@@ -20,7 +20,7 @@ import {
 import { useEffect } from "react";
 import { z } from "zod";
 import { useCart } from "~/cart.context";
-import { useOptionalUser, useProductsData } from "~/root";
+import { useEnv, useOptionalUser, useProductsData } from "~/root";
 import { createUserSession, getUser } from "~/sessions.server";
 import { SocketProvider, useSocket } from "~/socket.context";
 import {
@@ -318,6 +318,7 @@ const CartItem = ({
     const productInCart = calculatedPrice.products.find(
         (p) => p.documentId === documentId.value,
     );
+    const { STRAPI_URL } = useEnv() || {}
     if (!selectedProduct) return null;
     if (!productInCart) return null;
 
@@ -335,7 +336,7 @@ const CartItem = ({
                     <img
                         src={
                             selectedProduct.image.url.startsWith("/")
-                                ? `http://localhost:1337${selectedProduct.image.url}`
+                                ? `${STRAPI_URL}${selectedProduct.image.url}`
                                 : selectedProduct.image.url
                         }
                         alt={selectedProduct.image.alternativeText}

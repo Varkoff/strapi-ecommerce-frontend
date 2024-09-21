@@ -110,7 +110,7 @@ export const fetchStrapi = async ({
         }
     );
     const response = await fetch(
-        `http://localhost:1337/api/${resourceName}?${urlParams}`,
+        `${serverEnv.STRAPI_URL}/api/${resourceName}?${urlParams}`,
         {
             method,
             body:
