@@ -4,7 +4,7 @@ import type { ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, json, useActionData, useNavigation } from "@remix-run/react";
 import { z } from "zod";
 import { createUserSession } from "~/sessions.server";
-import { checkIfUserExists, logUser } from "~/strapi.server";
+import { checkIfUserExists, isUserPasswordValid, logUser } from "~/strapi.server";
 
 export const LoginSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -29,6 +29,19 @@ export const action = async ({ request }: ActionFunctionArgs) => {
                     message: 'User does not exist.',
                     path: ['email'],
                 })
+            }
+            const { isPasswordValid } = await isUserPasswordValid({
+                currentPassword: data.password,
+                email: data.email,
+            });
+
+            if (!isPasswordValid) {
+                ctx.addIssue({
+                    code: 'custom',
+                    message: 'Your password is not valid.',
+                    path: ['password'],
+                });
+                return false;
             }
         })
     });
